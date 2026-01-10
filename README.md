@@ -18,4 +18,4 @@ A project developed in Sean Allen's course using programmatic best practices tha
 **To run this project, you need:**
 
 - To have macOS running on your machine.
-- To have the Xcode IDE installed on your machine. You can download it from the App Store or from [Apple's developer site](https://apps.apple.com/us/app/xcode/id497799835?mt=12).
+- To have the Xcode IDE installed on your machine. You can download it from the App Store or using [this link](https://apps.apple.com/us/app/xcode/id497799835?mt=12).
