@@ -9,15 +9,23 @@ import UIKit
 
 class FollowerListViewController: UIViewController {
 	
+	enum Section { case main }
+	
 	var username: String!
+	var followers: [Follower] = []
+	var page: Int = 1
+	var hasMoreFollowers = true
+	
 	var collectionView: UICollectionView!
+	var dataSource: UICollectionViewDiffableDataSource<Section, Follower>!
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
 		configureViewController()
 		configureCollectionView()
-		getFollowers()
+		getFollowers(username: username, page: page)
+		configureDataSource()
 	}
 	
 	override func viewWillAppear(_ animated: Bool) {
@@ -34,38 +42,73 @@ class FollowerListViewController: UIViewController {
 	
 	
 	func configureCollectionView() {
-		collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createThreeColumnFlowLayout())
+		collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: UIHelper.createThreeColumnFlowLayout(in: view))
 		view.addSubview(collectionView)
-		collectionView.backgroundColor = .systemPurple
-		collectionView.register(FollowerCollectionViewCell.self, forCellWithReuseIdentifier: FollowerCollectionViewCell.reuseId)
+		collectionView.delegate = self
+		collectionView.backgroundColor = .systemBackground
+		collectionView.register(FollowerCell.self, forCellWithReuseIdentifier: FollowerCell.reuseId)
 	}
 	
 	
-	func createThreeColumnFlowLayout() -> UICollectionViewFlowLayout {
-		let width 											= view.bounds.width
-		let padding: CGFloat 						= 12
-		let minimumItemSpacing: CGFloat = 10
-		let availableWidth 							= width - (padding * 2) - (minimumItemSpacing * 2)
-		let itemWidth 									= availableWidth / 3
+	func getFollowers(username: String, page: Int) {
 		
-		let flowLayout 									= UICollectionViewFlowLayout()
-		flowLayout.sectionInset 				= UIEdgeInsets(top: padding, left: padding, bottom: padding, right: padding)
-		flowLayout.itemSize 						= CGSize(width: itemWidth, height: itemWidth + 40)
-		
-		return flowLayout
-	}
-	
-	
-	func getFollowers() {
-		NetworkManager.shared.getFollowers(for: username, page: 1) { result in
-			
-			switch result {
-			case .success(let followers):
-				print("Followers qnty: \(followers.count)")
-				print(followers)
-			case .failure(let error):
-				self.presentGFAlertOnMainThread(title: "Something went wrong!", message: error.rawValue, buttonTitle: "OK")
+		Task {
+			do {
+				let followers = try await NetworkManager.shared.getFollowers(for: username, page: page)
+				updateUI(with: followers)
+			} catch {
+				if let gfError = error as? GFError {
+					presentGFAlert(title: "Something went wrong!", message: gfError.rawValue, buttonTitle: "OK")
+				} else {
+					presentDefaultError()
+				}
 			}
+		}
+		
+	}
+	
+	func updateUI(with followers: [Follower]) {
+		if followers.count < NetworkManager.shared.usersPerPage { self.hasMoreFollowers = false }
+		self.followers.append(contentsOf: followers)
+		
+		self.updateData(on: followers)
+	}
+	
+	
+	func configureDataSource() {
+		dataSource = UICollectionViewDiffableDataSource<Section, Follower>(
+			collectionView: collectionView,
+			cellProvider: { (collectionView: UICollectionView, indexPath: IndexPath, follower: Follower) -> UICollectionViewCell? in
+				let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FollowerCell.reuseId, for: indexPath) as! FollowerCell
+				cell.set(follower: follower)
+				return cell
+			})
+	}
+	
+	
+	func updateData(on followers: [Follower]) {
+		var snapshot = NSDiffableDataSourceSnapshot<Section, Follower>()
+		snapshot.appendSections([ Section.main ])
+		snapshot.appendItems(followers)
+		DispatchQueue.main.async {
+			self.dataSource.apply(snapshot, animatingDifferences: true)
+		}
+	}
+	
+}
+
+extension FollowerListViewController: UICollectionViewDelegate {
+	
+	func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+		let offsetY = scrollView.contentOffset.y
+		let contentHeight = scrollView.contentSize.height
+		let height = scrollView.frame.size.height
+		
+		if offsetY > contentHeight - height {
+			guard hasMoreFollowers else { return }
+			
+			page += 1
+			getFollowers(username: username, page: page)
 		}
 	}
 	

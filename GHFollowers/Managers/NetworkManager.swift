@@ -5,51 +5,39 @@
 //  Created by Caio Luna on 09/01/26.
 //
 
-import Foundation
+import UIKit
 
 class NetworkManager {
 	static let shared = NetworkManager()
-	let baseURL = "https://api.github.com"
+	private let baseURL = "https://api.github.com"
+	let usersPerPage = 50
+	let cache = NSCache<NSString, UIImage>()
+	let decoder = JSONDecoder()
 	
-	private init() {}
+	private init() {
+		decoder.keyDecodingStrategy = .convertFromSnakeCase
+		decoder.dateDecodingStrategy = .iso8601
+	}
 	
 	
-	func getFollowers(for username: String, page: Int, completion: @escaping (Result<[Follower], GFError>) -> Void) {
-		let endpoint = baseURL + "/users/\(username)/followers?per_page=50&page=\(page)"
+	func getFollowers(for username: String, page: Int) async throws -> [Follower] {
+		let endpoint = baseURL + "/users/\(username)/followers?per_page=\(usersPerPage)&page=\(page)"
 		
 		guard let url = URL(string: endpoint) else {
-			completion(.failure(.invalidUsername))
-			return
+			throw GFError.invalidUsername
 		}
 		
-		let task = URLSession.shared.dataTask(with: url) { data, response, error in
-			
-			if let _ = error {
-				completion(.failure(.unableToComplete))
-				return
-			}
-			
-			guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
-				completion(.failure(.invalidResponse))
-				return
-			}
-			
-			guard let data = data else {
-				completion(.failure(.invalidData))
-				return
-			}
-			
-			do {
-				let decoder = JSONDecoder()
-				decoder.keyDecodingStrategy = .convertFromSnakeCase
-				
-				let followers = try decoder.decode([Follower].self, from: data)
-				completion(.success(followers))
-			} catch {
-				completion(.failure(.invalidData))
-			}
+		let (data, response) = try await URLSession.shared.data(from: url)
+		
+		guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
+			throw GFError.invalidResponse
 		}
 		
-		task.resume()
+		do {
+			return try decoder.decode([Follower].self, from: data)
+		} catch {
+			throw GFError.invalidData
+		}
+		
 	}
 }
