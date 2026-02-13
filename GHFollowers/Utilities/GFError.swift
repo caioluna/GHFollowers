@@ -1,6 +1,6 @@
 //
 //  ErrorMessage.swift
-//  GHFollowers
+//  GFError
 //
 //  Created by Caio Luna on 10/01/26.
 //

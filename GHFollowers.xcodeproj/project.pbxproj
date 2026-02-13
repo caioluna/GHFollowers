@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		FE921E892F13FF120031EFDB /* GHFollowers.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = GHFollowers.app; path = "/Users/caioluna/Documents/swift_dev/2026/GHFollowers/build/Debug-iphoneos/GHFollowers.app"; sourceTree = "<absolute>"; };
+		FEA5DD082F3EA864004365B0 /* GHFollowers.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GHFollowers.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -46,6 +46,7 @@
 			isa = PBXGroup;
 			children = (
 				FE9765CE2F0F4E0B00BEA399 /* GHFollowers */,
+				FEA5DD082F3EA864004365B0 /* GHFollowers.app */,
 			);
 			sourceTree = "<group>";
 		};
@@ -71,7 +72,7 @@
 			packageProductDependencies = (
 			);
 			productName = GHFollowers;
-			productReference = FE921E892F13FF120031EFDB /* GHFollowers.app */;
+			productReference = FEA5DD082F3EA864004365B0 /* GHFollowers.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */

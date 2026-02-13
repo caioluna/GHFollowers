@@ -7,14 +7,16 @@
 
 import UIKit
 
-class FollowerListViewController: UIViewController {
+class FollowerListVC: UIViewController {
 	
 	enum Section { case main }
 	
 	var username: String!
 	var followers: [Follower] = []
+	var filteredFollowers: [Follower] = []
 	var page: Int = 1
-	var hasMoreFollowers = true
+	var hasMoreFollowers: Bool = true
+	var isSearching: Bool = false
 	
 	var collectionView: UICollectionView!
 	var dataSource: UICollectionViewDiffableDataSource<Section, Follower>!
@@ -23,6 +25,7 @@ class FollowerListViewController: UIViewController {
 		super.viewDidLoad()
 		
 		configureViewController()
+		configureSearchController()
 		configureCollectionView()
 		getFollowers(username: username, page: page)
 		configureDataSource()
@@ -53,9 +56,20 @@ class FollowerListViewController: UIViewController {
 	func getFollowers(username: String, page: Int) {
 		
 		Task {
+			showLoadingView()
+			
 			do {
 				let followers = try await NetworkManager.shared.getFollowers(for: username, page: page)
+				
 				updateUI(with: followers)
+				dismissLoadingView()
+				
+				if followers.isEmpty {
+					let message = "This user doesn't have any followers. Go follow them! 🙃"
+					showEmptyStateView(with: message, in: self.view)
+					return
+				}
+				
 			} catch {
 				if let gfError = error as? GFError {
 					presentGFAlert(title: "Something went wrong!", message: gfError.rawValue, buttonTitle: "OK")
@@ -66,6 +80,18 @@ class FollowerListViewController: UIViewController {
 		}
 		
 	}
+	
+	
+	func configureSearchController() {
+		let searchController = UISearchController()
+		searchController.searchResultsUpdater = self
+		searchController.searchBar.delegate = self
+		searchController.searchBar.placeholder = "Search for a user"
+		searchController.obscuresBackgroundDuringPresentation = false
+		navigationItem.searchController = searchController
+		navigationItem.hidesSearchBarWhenScrolling = false
+	}
+	
 	
 	func updateUI(with followers: [Follower]) {
 		if followers.count < NetworkManager.shared.usersPerPage { self.hasMoreFollowers = false }
@@ -97,7 +123,7 @@ class FollowerListViewController: UIViewController {
 	
 }
 
-extension FollowerListViewController: UICollectionViewDelegate {
+extension FollowerListVC: UICollectionViewDelegate {
 	
 	func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
 		let offsetY = scrollView.contentOffset.y
@@ -110,6 +136,36 @@ extension FollowerListViewController: UICollectionViewDelegate {
 			page += 1
 			getFollowers(username: username, page: page)
 		}
+	}
+	
+	
+	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+		let activeArray = isSearching ? filteredFollowers : followers
+		let follower = activeArray[indexPath.item]
+		
+		let destinationViewController = UserInfoVC()
+		destinationViewController.username = follower.login
+		let navigationController = UINavigationController(rootViewController: destinationViewController)
+		present(navigationController, animated: true)
+		
+	}
+}
+
+extension FollowerListVC: UISearchResultsUpdating, UISearchBarDelegate {
+	func updateSearchResults(for searchController: UISearchController) {
+		guard let filter = searchController.searchBar.text, !filter.isEmpty else { return }
+		isSearching = true
+		
+		filteredFollowers = followers.filter({ follower in
+			follower.login.lowercased().contains(filter.lowercased())
+		})
+		
+		updateData(on: filteredFollowers)
+	}
+	
+	func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+		isSearching = false
+		updateData(on: followers)
 	}
 	
 }
