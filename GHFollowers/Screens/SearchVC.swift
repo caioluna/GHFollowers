@@ -27,25 +27,26 @@ class SearchVC: UIViewController {
 	
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
+		usernameTextField.text = ""
 		navigationController?.setNavigationBarHidden(true, animated: true)
 	}
 	
 	
 	func createDismissKeyBoardTapGesture() {
-		let tap = UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing))
+		let tap = UITapGestureRecognizer(target: view, action: #selector(UIView.endEditing))
 		view.addGestureRecognizer(tap)
 	}
 	
 	
-	@objc func pushFollowerListViewController() {
+	@objc func pushFollowerListVC() {
 		guard isUsernameEntered else {
 			presentGFAlert(title: "Empty username", message: "Please enter a username. We need to know who to look for 🙃", buttonTitle: "OK")
 			return
 		}
 		
-		let followerListViewController 			= FollowerListVC()
-		followerListViewController.username = usernameTextField.text
-		followerListViewController.title 		= usernameTextField.text
+		usernameTextField.resignFirstResponder()
+		
+		let followerListViewController = FollowerListVC(username: usernameTextField.text!)
 		
 		navigationController?.pushViewController(followerListViewController, animated: true)
 	}
@@ -57,7 +58,7 @@ class SearchVC: UIViewController {
 	func configureLogoImageView() {
 		view.addSubview(logoImageView)
 		logoImageView.translatesAutoresizingMaskIntoConstraints = false
-		logoImageView.image = UIImage(named: "gh-logo")!
+		logoImageView.image = Images.ghLogo
 		
 		NSLayoutConstraint.activate([
 			logoImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 80),
@@ -83,7 +84,7 @@ class SearchVC: UIViewController {
 	
 	func configureCallToActionButton() {
 		view.addSubview(callToActionButton)
-		callToActionButton.addTarget(self, action: #selector(pushFollowerListViewController), for: .touchUpInside)
+		callToActionButton.addTarget(self, action: #selector(pushFollowerListVC), for: .touchUpInside)
 		
 		NSLayoutConstraint.activate([
 			callToActionButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -50),
@@ -100,7 +101,7 @@ class SearchVC: UIViewController {
 
 extension SearchVC: UITextFieldDelegate {
 	func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-		pushFollowerListViewController()
+		pushFollowerListVC()
 		return true
 	}
 }

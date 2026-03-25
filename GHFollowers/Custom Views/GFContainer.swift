@@ -15,6 +15,7 @@ class GFContainer: UIView {
 		configure()
 	}
 	
+	
 	required init?(coder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
 	}
@@ -23,10 +24,10 @@ class GFContainer: UIView {
 	private func configure() {
 		translatesAutoresizingMaskIntoConstraints = false
 		
-		layer.cornerRadius 	= 16
-		layer.borderWidth 	= 2
-		layer.borderColor 	= UIColor.systemGray2.cgColor
-		backgroundColor 		= .systemBackground
+		layer.cornerRadius = 16
+		layer.borderWidth = 2
+		layer.borderColor = UIColor.systemGray2.cgColor
+		backgroundColor = .systemBackground
 	}
 
 }

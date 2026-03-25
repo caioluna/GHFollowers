@@ -5,7 +5,7 @@
 //  Created by Caio Luna on 12/02/26.
 //
 
-import Foundation
+import UIKit
 
 enum SFSymbols {
 	static let location = "mappin.and.ellipse"
@@ -13,5 +13,8 @@ enum SFSymbols {
 	static let gists = "text.alignleft"
 	static let followers = "heart"
 	static let following = "person.2"
-	
+}
+
+enum Images {
+	static let ghLogo = UIImage(named: "gh-logo")
 }

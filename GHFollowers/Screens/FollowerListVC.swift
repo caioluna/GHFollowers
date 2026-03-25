@@ -11,7 +11,7 @@ protocol FollowerListVCDelegate: AnyObject {
 	func didRequestFollowers(for username: String)
 }
 
-class FollowerListVC: UIViewController {
+class FollowerListVC: GFDataLoadingVC {
 	
 	enum Section { case main }
 	
@@ -24,6 +24,16 @@ class FollowerListVC: UIViewController {
 	
 	var collectionView: UICollectionView!
 	var dataSource: UICollectionViewDiffableDataSource<Section, Follower>!
+	
+	init(username: String) {
+		super.init(nibName: nil, bundle: nil)
+		self.username = username
+		title = username
+	}
+	
+	required init?(coder: NSCoder) {
+		fatalError("init(coder:) has not been implemented")
+	}
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -118,7 +128,6 @@ class FollowerListVC: UIViewController {
 				}
 			}
 		}
-		
 	}
 	
 	
