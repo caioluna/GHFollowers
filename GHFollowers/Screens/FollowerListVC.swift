@@ -32,9 +32,11 @@ class FollowerListVC: GFDataLoadingVC {
 		title = username
 	}
 	
+	
 	required init?(coder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
 	}
+	
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -46,9 +48,9 @@ class FollowerListVC: GFDataLoadingVC {
 		configureDataSource()
 	}
 	
+	
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
-		
 		navigationController?.setNavigationBarHidden(false, animated: true)
 	}
 	
@@ -91,7 +93,6 @@ class FollowerListVC: GFDataLoadingVC {
 				}
 			}
 		}
-		
 	}
 	
 	
@@ -147,7 +148,6 @@ class FollowerListVC: GFDataLoadingVC {
 	func updateUI(with followers: [Follower]) {
 		if followers.count < NetworkManager.shared.usersPerPage { self.hasMoreFollowers = false }
 		self.followers.append(contentsOf: followers)
-		
 		self.updateData(on: followers)
 	}
 	
@@ -171,8 +171,8 @@ class FollowerListVC: GFDataLoadingVC {
 			self.dataSource.apply(snapshot, animatingDifferences: true)
 		}
 	}
-	
 }
+
 
 extension FollowerListVC: UICollectionViewDelegate {
 	
@@ -200,9 +200,9 @@ extension FollowerListVC: UICollectionViewDelegate {
 		
 		let navigationController = UINavigationController(rootViewController: destVC)
 		present(navigationController, animated: true)
-		
 	}
 }
+
 
 extension FollowerListVC: UISearchResultsUpdating {
 	func updateSearchResults(for searchController: UISearchController) {

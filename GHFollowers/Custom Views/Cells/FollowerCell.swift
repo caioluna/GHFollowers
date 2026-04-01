@@ -10,11 +10,11 @@ import UIKit
 class FollowerCell: UICollectionViewCell {
 	
 	static let reuseId = "FollowerCell"
-	
 	let avatarImageView = GFAvatarImageView(frame: .zero)
 	let usernameLabel 	= GFTitleLabel(textAlignment: .center, fontSize: 16)
 	
 	let padding: CGFloat = 8
+	
 	
 	override init(frame: CGRect) {
 		super.init(frame: frame)
@@ -23,6 +23,7 @@ class FollowerCell: UICollectionViewCell {
 		configureUsernameLabel()
 	}
 	
+	
 	required init?(coder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
 	}
@@ -30,6 +31,7 @@ class FollowerCell: UICollectionViewCell {
 	
 	func set(follower: Follower) {
 		usernameLabel.text = follower.login
+		
 		NetworkManager.shared.downloadImage(from: follower.avatarUrl) { [weak self] image in
 			guard let self = self else { return }
 			Task { self.avatarImageView.image = image }
@@ -51,7 +53,7 @@ class FollowerCell: UICollectionViewCell {
 	
 	private func configureUsernameLabel() {
 		addSubview(usernameLabel)
-	
+		
 		NSLayoutConstraint.activate([
 			usernameLabel.topAnchor.constraint(equalTo: avatarImageView.bottomAnchor, constant: 12),
 			usernameLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: padding),

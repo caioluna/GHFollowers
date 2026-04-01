@@ -45,14 +45,9 @@ class SearchVC: UIViewController {
 		}
 		
 		usernameTextField.resignFirstResponder()
-		
 		let followerListViewController = FollowerListVC(username: usernameTextField.text!)
-		
 		navigationController?.pushViewController(followerListViewController, animated: true)
 	}
-	
-	
-	// MARK: - UI config functions
 	
 	
 	func configureLogoImageView() {
@@ -93,11 +88,8 @@ class SearchVC: UIViewController {
 			callToActionButton.heightAnchor.constraint(equalToConstant: 46),
 		])
 	}
-	
 }
 
-
-// MARK: - Extensions
 
 extension SearchVC: UITextFieldDelegate {
 	func textFieldShouldReturn(_ textField: UITextField) -> Bool {

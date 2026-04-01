@@ -11,7 +11,6 @@ enum ItemInfoType {
 	case repos, gists, followers, following
 }
 
-
 class GFItemInfoView: UIView {
 	
 	let symbolImageView = UIImageView()
@@ -30,9 +29,7 @@ class GFItemInfoView: UIView {
 	
 	
 	private func configure() {
-		addSubview(symbolImageView)
-		addSubview(titleLabel)
-		addSubview(countLabel)
+		addSubviews(symbolImageView, titleLabel, countLabel)
 		
 		symbolImageView.translatesAutoresizingMaskIntoConstraints = false
 		symbolImageView.contentMode = .scaleAspectFill
@@ -72,8 +69,7 @@ class GFItemInfoView: UIView {
 			symbolImageView.image = SFSymbols.following
 			titleLabel.text = "Following"
 		}
-		countLabel.text = String(count)
 		
+		countLabel.text = String(count)
 	}
-	
 }

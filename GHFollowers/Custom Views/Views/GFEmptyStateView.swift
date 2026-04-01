@@ -17,19 +17,23 @@ class GFEmptyStateView: UIView {
 		configure()
 	}
 	
+	
 	required init?(coder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
 	}
+	
 	
 	convenience init(message: String) {
 		self.init(frame: .zero)
 		self.messageLabel.text = message
 	}
 	
+	
 	private func configure() {
 		configureMessageLabel()
 		configureLogoImageView()
 	}
+	
 	
 	private func configureMessageLabel() {
 		addSubview(messageLabel)
@@ -47,6 +51,7 @@ class GFEmptyStateView: UIView {
 			messageLabel.heightAnchor.constraint(equalToConstant: 200),
 		])
 	}
+	
 	
 	private func configureLogoImageView() {
 		addSubview(logoImageView)

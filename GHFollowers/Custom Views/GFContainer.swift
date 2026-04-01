@@ -8,10 +8,9 @@
 import UIKit
 
 class GFContainer: UIView {
-
+	
 	override init(frame: CGRect) {
 		super.init(frame: frame)
-		
 		configure()
 	}
 	
@@ -29,5 +28,4 @@ class GFContainer: UIView {
 		layer.borderColor = UIColor.systemGray2.cgColor
 		backgroundColor = .systemBackground
 	}
-
 }
