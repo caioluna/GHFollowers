@@ -70,28 +70,35 @@ class FollowerListVC: GFDataLoadingVC {
 			showLoadingView()
 			
 			do {
-				let follower = try await NetworkManager.shared.getUserInfo(for: username)
+				let user = try await NetworkManager.shared.getUserInfo(for: username)
+				
 				dismissLoadingView()
 				
-				let favorite = Follower(login: follower.login, avatarUrl: follower.avatarUrl)
-				
-				PersistenceManager.updateWith(favorite: favorite, actionType: .add) { [weak self] error in
-					guard let self else { return }
-					guard let error = error else {
-						self.presentGFAlert(title: "Success!", message: "You have favorited this user.", buttonTitle: "Woohoo!")
-						return
-					}
-					
-					presentGFAlert(title: "Something went wrong!", message: error.rawValue, buttonTitle: "OK")
-				}
+				addUserToFavorites(user: user)
 				
 			} catch {
+				
 				if let gfError = error as? GFError {
 					presentGFAlert(title: "Something went wrong!", message: gfError.rawValue, buttonTitle: "OK")
 				} else {
 					presentDefaultError()
 				}
 			}
+		}
+	}
+	
+	
+	func addUserToFavorites(user: User) {
+		let favorite = Follower(login: user.login, avatarUrl: user.avatarUrl)
+		
+		PersistenceManager.updateWith(favorite: favorite, actionType: .add) { [weak self] error in
+			guard let self else { return }
+			guard let error = error else {
+				self.presentGFAlert(title: "Success!", message: "You have favorited this user.", buttonTitle: "Woohoo!")
+				return
+			}
+			
+			presentGFAlert(title: "Something went wrong!", message: error.rawValue, buttonTitle: "OK")
 		}
 	}
 	
